@@ -1,0 +1,12 @@
+{
+  "name": "dslink-java-v2-jdbc-h2",
+  "version": "1.3.5",
+  "description": "Database link for JDBC databases",
+  "main": "bin/dslink-java-v2-jdbc-h2",
+  "configs": {
+    "main-node": {
+      "type": "string",
+      "value": "org.iot.dsa.dslink.jdbc.h2.MainNode"
+    }
+  }
+}

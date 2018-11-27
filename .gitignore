@@ -1,0 +1,33 @@
+# Tooling
+**.classpath
+**.idea
+**.iml
+**.metadata
+**.project
+**.settings
+**eclipseBin
+
+# Build artifacts
+.gradle
+**.class
+**build
+**classes
+**libJar
+**out
+**target
+
+# Misc
+**.bak
+**.old
+**.log
+**.DS_Store
+
+# Runtime files
+**.jks
+**.key
+**db
+**nodes.json
+**nodes*.zip
+**test.json
+**/*.log.*.zip
+/bin/
