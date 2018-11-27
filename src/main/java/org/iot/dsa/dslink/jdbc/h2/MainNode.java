@@ -12,6 +12,7 @@ import org.iot.dsa.node.action.DSAction;
 
 public class MainNode extends org.iot.dsa.dslink.jdbc.MainNode {
 	
+	@Override
 	protected DSAction makeAddDatabaseAction() {
 		DSAction act = new DSAction.Parameterless() {
             @Override
@@ -26,6 +27,11 @@ public class MainNode extends org.iot.dsa.dslink.jdbc.MainNode {
         //action.addParameter(new Parameter(JdbcConstants.DEFAULT_TIMEOUT, ValueType.NUMBER));
         //action.addParameter(new Parameter(JdbcConstants.POOLABLE, ValueType.BOOL, new Value(true)));
         return act;
+	}
+	
+	@Override
+	protected String getHelpUrl() {
+		return "https://github.com/iot-dsa-v2/dslink-java-v2-jdbc-h2";
 	}
 	
 	private ActionResult createNewDatabase(DSMap parameters) {
