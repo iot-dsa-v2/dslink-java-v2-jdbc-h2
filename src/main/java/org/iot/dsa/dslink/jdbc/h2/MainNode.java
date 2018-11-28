@@ -1,5 +1,6 @@
 package org.iot.dsa.dslink.jdbc.h2;
 
+import org.iot.dsa.dslink.jdbc.AbstractMainNode;
 import org.iot.dsa.dslink.jdbc.JDBCv2Helpers;
 import org.iot.dsa.node.DSElement;
 import org.iot.dsa.node.DSInfo;
@@ -10,7 +11,7 @@ import org.iot.dsa.node.action.ActionInvocation;
 import org.iot.dsa.node.action.ActionResult;
 import org.iot.dsa.node.action.DSAction;
 
-public class MainNode extends org.iot.dsa.dslink.jdbc.MainNode {
+public class MainNode extends AbstractMainNode {
 	
 	@Override
 	protected DSAction makeAddDatabaseAction() {
