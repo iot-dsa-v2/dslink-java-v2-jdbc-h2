@@ -25,7 +25,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.github.iot-dsa-v2:dslink-java-v2-jdbc:84e35e5dc2'
+    implementation 'com.github.iot-dsa-v2:dslink-java-v2-jdbc:v+'
     implementation 'com.h2database:h2:+'
 }
 
