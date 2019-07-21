@@ -51,7 +51,6 @@ public class ManagedH2DBConnectionNode extends DBConnectionNode {
         if (db_name.getElement().toString().isEmpty()) {
             throw new IllegalStateException("Empty db name");
         }
-        configOk();
     }
 
     @Override
@@ -85,14 +84,12 @@ public class ManagedH2DBConnectionNode extends DBConnectionNode {
     }
 
     @Override
-	protected
-    void closeConnections() {
+    protected void closeConnections() {
         stopTCPServer();
     }
 
     @Override
-	protected
-    void createDatabaseConnection() {
+    protected void createDatabaseConnection() {
         if (!canConnect()) {
             return;
         }
@@ -102,7 +99,7 @@ public class ManagedH2DBConnectionNode extends DBConnectionNode {
     }
 
     @Override
-	protected ActionResult edit(DSMap parameters) {
+    protected ActionResult edit(DSMap parameters) {
         DSElement newUsr = parameters.get(JDBCv2Helpers.DB_USER);
         DSElement newPass = parameters.get(JDBCv2Helpers.DB_PASSWORD);
         //noinspection UnusedAssignment
@@ -155,8 +152,7 @@ public class ManagedH2DBConnectionNode extends DBConnectionNode {
     }
 
     @Override
-	protected
-    Connection getConnection() throws SQLException {
+    protected Connection getConnection() throws SQLException {
         try {
             updateServerURL();
             return DriverManager.getConnection("jdbc:h2:" + getCurDBName(),
@@ -225,4 +221,5 @@ public class ManagedH2DBConnectionNode extends DBConnectionNode {
     private void updateServerURL() {
         put(db_url, DSElement.make(getServerURL()));
     }
+
 }
