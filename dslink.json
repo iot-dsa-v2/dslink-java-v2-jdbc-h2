@@ -1,7 +1,7 @@
 {
   "name": "dslink-java-v2-jdbc-h2",
   "version": "0.0.2",
-  "description": "Database link for JDBC databases",
+  "description": "Database link for H2 databases",
   "main": "bin/dslink-java-v2-jdbc-h2",
   "configs": {
     "main-node": {
