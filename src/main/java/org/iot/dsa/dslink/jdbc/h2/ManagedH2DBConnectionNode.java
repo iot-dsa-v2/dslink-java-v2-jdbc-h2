@@ -8,7 +8,6 @@ import java.sql.Statement;
 import org.h2.tools.Server;
 import org.iot.dsa.dslink.DSMainNode;
 import org.iot.dsa.dslink.jdbc.DBConnectionNode;
-import org.iot.dsa.dslink.jdbc.JDBCv2Helpers;
 import org.iot.dsa.dslink.jdbc.TableNode;
 import org.iot.dsa.node.DSBool;
 import org.iot.dsa.node.DSElement;
@@ -29,9 +28,9 @@ import org.iot.dsa.node.action.DSAction;
 @SuppressWarnings("SqlNoDataSourceInspection")
 public class ManagedH2DBConnectionNode extends DBConnectionNode {
 
-    private final DSInfo extrnl = getInfo(JDBCv2Helpers.EXT_ACCESS);
+    public static final String EXT_ACCESS = "Allow Access";
     private static String NO_URL = "No Access";
-    private boolean driver_loaded = false;
+    private final DSInfo extrnl = getInfo(EXT_ACCESS);
     private Server server;
 
     @SuppressWarnings("unused")
@@ -51,48 +50,15 @@ public class ManagedH2DBConnectionNode extends DBConnectionNode {
         if (db_name.getElement().toString().isEmpty()) {
             throw new IllegalStateException("Empty db name");
         }
-        configOk();
     }
 
     @Override
-    protected void declareDefaults() {
-        super.declareDefaults();
-        declareDefault(JDBCv2Helpers.EXT_ACCESS, DSBool.make(false));
-        declareDefault(JDBCv2Helpers.SHOW_TABLES, makeShowTablesAction());
-    }
-
-    @Override
-    protected void onChildChanged(DSInfo info) {
-        super.onChildChanged(info);
-        if (info.getName().equals(JDBCv2Helpers.EXT_ACCESS)) {
-            if (info.getValue().toElement().toBoolean()) {
-                startTCPServer();
-            } else {
-                stopTCPServer();
-            }
-        }
-    }
-
-    @Override
-    protected void onStable() {
-        super.onStable();
-        //TODO: Ask AAron if this is the best way to get boolean
-        if (extrnl.getValue().toElement().toBoolean()) {
-            startTCPServer();
-        } else {
-            stopTCPServer();
-        }
-    }
-
-    @Override
-	protected
-    void closeConnections() {
+    protected void closeConnections() {
         stopTCPServer();
     }
 
     @Override
-	protected
-    void createDatabaseConnection() {
+    protected void createDatabaseConnection() {
         if (!canConnect()) {
             return;
         }
@@ -102,9 +68,16 @@ public class ManagedH2DBConnectionNode extends DBConnectionNode {
     }
 
     @Override
-	protected ActionResult edit(DSMap parameters) {
-        DSElement newUsr = parameters.get(JDBCv2Helpers.DB_USER);
-        DSElement newPass = parameters.get(JDBCv2Helpers.DB_PASSWORD);
+    protected void declareDefaults() {
+        super.declareDefaults();
+        declareDefault(EXT_ACCESS, DSBool.make(false));
+        //declareDefault(SHOW_TABLES, makeShowTablesAction());
+    }
+
+    @Override
+    protected ActionResult edit(DSMap parameters) {
+        DSElement newUsr = parameters.get(DB_USER);
+        DSElement newPass = parameters.get(DB_PASSWORD);
         //noinspection UnusedAssignment
         String newUsrStr = null;
         String curUserStr = usr_name.getValue().toString();
@@ -144,8 +117,8 @@ public class ManagedH2DBConnectionNode extends DBConnectionNode {
             warn("Failed to get connection.", e);
             connDown(e.getMessage());
         } finally {
-            JDBCv2Helpers.cleanClose(null, chg_pass, data, this);
-            JDBCv2Helpers.cleanClose(null, chg_usr, data, this);
+            cleanClose(null, chg_pass, data, this);
+            cleanClose(null, chg_usr, data, this);
         }
 
         setParameters(parameters);
@@ -155,8 +128,7 @@ public class ManagedH2DBConnectionNode extends DBConnectionNode {
     }
 
     @Override
-	protected
-    Connection getConnection() throws SQLException {
+    protected Connection getConnection() throws SQLException {
         try {
             updateServerURL();
             return DriverManager.getConnection("jdbc:h2:" + getCurDBName(),
@@ -168,41 +140,34 @@ public class ManagedH2DBConnectionNode extends DBConnectionNode {
         return null;
     }
 
+    @Override
+    protected void onChildChanged(DSInfo info) {
+        super.onChildChanged(info);
+        if (info.getName().equals(EXT_ACCESS)) {
+            if (info.getElement().toBoolean()) {
+                startTCPServer();
+            } else {
+                stopTCPServer();
+            }
+        }
+    }
+
+    @Override
+    protected void onStable() {
+        super.onStable();
+        if (extrnl.getElement().toBoolean()) {
+            startTCPServer();
+        } else {
+            stopTCPServer();
+        }
+    }
+
     private String getCurDBName() {
         return "./db/" + db_name.getValue().toString();
     }
 
     private String getServerURL() {
         return (server != null) ? "jdbc:h2:" + server.getURL() + "/" + getCurDBName() : NO_URL;
-    }
-
-    private DSAction makeShowTablesAction() {
-        DSAction act = new DSAction.Parameterless() {
-            @Override
-            public ActionResult invoke(DSInfo target, ActionInvocation invocation) {
-                invocation.getParameters().put(JDBCv2Helpers.QUERY, "SHOW TABLES");
-                DBConnectionNode par = (DBConnectionNode) target.get();
-                ResultSet res = par.executeQuery("SHOW TABLES");
-                if (invocation.getParameters().get(JDBCv2Helpers.MAKE_NODES).toBoolean()) {
-                    try {
-                        while (res.next()) {
-                            String nxtNode = res.getString(1);
-                            if (par.get(nxtNode) == null) {
-                                par.add(nxtNode, new TableNode());
-                            }
-                        }
-                    } catch (SQLException e) {
-                        warn("Failed to read table list: ", e);
-                    }
-                }
-                return ((DBConnectionNode) target.get())
-                        .runQuery(invocation.getParameters(), this);
-            }
-        };
-        act.addParameter(JDBCv2Helpers.MAKE_NODES, DSValueType.BOOL, null)
-           .setDefault(DSElement.make(false));
-        act.setResultType(ActionSpec.ResultType.CLOSED_TABLE);
-        return act;
     }
 
     private void startTCPServer() {
@@ -225,4 +190,5 @@ public class ManagedH2DBConnectionNode extends DBConnectionNode {
     private void updateServerURL() {
         put(db_url, DSElement.make(getServerURL()));
     }
+
 }
