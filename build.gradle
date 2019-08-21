@@ -1,22 +1,18 @@
-import groovy.json.JsonSlurper
-
 apply plugin: 'application'
 apply plugin: 'java'
 
+// Version is taken from dslink.json
+import groovy.json.JsonSlurper
+build {
+    version = new JsonSlurper().parseText(file('dslink.json').text).version
+}
+
+mainClassName = 'org.iot.dsa.dslink.DSLink'
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
-mainClassName = 'org.iot.dsa.dslink.DSLink'
-
-build {
-    def inputFile = file('dslink.json')
-    def json = new JsonSlurper().parseText(inputFile.text)
-    version = json.version
-}
-
 repositories {
     mavenLocal()
-    mavenCentral()
     jcenter()
     maven {
         url 'https://jitpack.io'
@@ -39,11 +35,21 @@ jar {
 
 applicationDistribution.from(new File(project.projectDir, "/dslink.json"))
 
+distZip {
+    archiveName project.name + ".zip"
+    eachFile { file ->
+        String path = file.relativePath
+        file.setPath(path.substring(path.indexOf("/")+1,path.length()))
+    }
+}
+
+distTar.enabled = false
+
 run {
     args System.getProperty("exec.args", "").split()
     workingDir project.buildDir
 }
 
 wrapper {
-    gradleVersion = '5.5.1'
+    gradleVersion = '5.6'
 }
