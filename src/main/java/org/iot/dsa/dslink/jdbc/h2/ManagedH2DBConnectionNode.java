@@ -2,22 +2,16 @@ package org.iot.dsa.dslink.jdbc.h2;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import org.h2.tools.Server;
+import org.iot.dsa.dslink.ActionResults;
 import org.iot.dsa.dslink.DSMainNode;
 import org.iot.dsa.dslink.jdbc.DBConnectionNode;
-import org.iot.dsa.dslink.jdbc.TableNode;
 import org.iot.dsa.node.DSBool;
 import org.iot.dsa.node.DSElement;
 import org.iot.dsa.node.DSInfo;
 import org.iot.dsa.node.DSMap;
-import org.iot.dsa.node.DSValueType;
-import org.iot.dsa.node.action.ActionInvocation;
-import org.iot.dsa.node.action.ActionResult;
-import org.iot.dsa.node.action.ActionSpec;
-import org.iot.dsa.node.action.DSAction;
 
 /**
  * Class designed for handling user-friendly simple local H2 databases.
@@ -75,7 +69,7 @@ public class ManagedH2DBConnectionNode extends DBConnectionNode {
     }
 
     @Override
-    protected ActionResult edit(DSMap parameters) {
+    protected ActionResults edit(DSMap parameters) {
         DSElement newUsr = parameters.get(DB_USER);
         DSElement newPass = parameters.get(DB_PASSWORD);
         //noinspection UnusedAssignment
