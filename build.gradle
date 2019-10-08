@@ -21,7 +21,7 @@ repositories {
 
 dependencies {
     //implementation 'org.iot-dsa:dslink-java-v2-jdbc:+' //for a locally installed sdk
-    implementation 'com.github.iot-dsa-v2:dslink-java-v2-jdbc:1.4.1'
+    implementation 'com.github.iot-dsa-v2:dslink-java-v2-jdbc:1.4.2'
     implementation 'com.h2database:h2:+'
 }
 
@@ -51,5 +51,5 @@ run {
 }
 
 wrapper {
-    gradleVersion = '5.6'
+    gradleVersion = '5.6.2'
 }
